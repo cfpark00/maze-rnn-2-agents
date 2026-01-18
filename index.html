@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Flow - Maze RNN Multi-Turn V1 (Auto-GS)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e5e5e5;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 2400px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .stats {
+            color: #888;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        .event {
+            position: relative;
+            padding: 12px;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 2px solid;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 100px;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .event.active {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+        }
+        .event-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .event-type {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+        .event-number {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-left: auto;
+        }
+        .event-content {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .event-summary {
+            display: none;
+        }
+        .summary-row {
+            grid-column: 1 / -1;
+            padding: 16px;
+            background: #0f172a;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.6;
+            animation: slideDown 0.2s ease-out;
+            white-space: pre-wrap;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Research Flow: Maze RNN Multi-Turn V1 (Auto-GS)</h1>
+        <div class="stats">
+            <strong>55</strong> research events · Click any event to see full context
+        </div>
+
+        <div class="grid">
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#1</span>
+                </div>
+                <div class="event-content">The main research goal is defined: investigate if an RNN can learn a generalizable world model for maze navigation from egocentric observations.</div>
+            </div>
+
+            <div class="event" style="border-color: #8b5cf6;" data-type="milestone set" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #8b5cf6;">Milestone Set</span>
+                    <span class="event-number">#2</span>
+                </div>
+                <div class="event-content">An initial milestone is set: build a maze environment and implement a baseline LSTM/GRU agent with PPO.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#3</span>
+                </div>
+                <div class="event-content">Implementation of the entire baseline experiment begins, including environment, agent, and training loop.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#4</span>
+                </div>
+                <div class="event-content">A sanity check experiment is run to verify the codebase.</div>
+            </div>
+
+            <div class="event" style="border-color: #22c55e;" data-type="observation" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #22c55e;">Observation</span>
+                    <span class="event-number">#5</span>
+                </div>
+                <div class="event-content">The sanity check reveals a discrepancy: success during stochastic training but 0% during deterministic evaluation.</div>
+            </div>
+
+            <div class="event" style="border-color: #ec4899;" data-type="hypothesis" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ec4899;">Hypothesis</span>
+                    <span class="event-number">#6</span>
+                </div>
+                <div class="event-content">The discrepancy is hypothesized to be due to the agent relying on random exploration rather than learning a robust policy.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#7</span>
+                </div>
+                <div class="event-content">A full-scale baseline training experiment is conducted.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#8</span>
+                </div>
+                <div class="event-content">Initial (but flawed) results suggest the agent generalizes surprisingly well to 2x size mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #22c55e;" data-type="observation" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #22c55e;">Observation</span>
+                    <span class="event-number">#9</span>
+                </div>
+                <div class="event-content">An anomaly is observed: performance on 15x15 mazes is worse than on 21x21 mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #ef4444;" data-type="pivot" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ef4444;">Pivot</span>
+                    <span class="event-number">#10</span>
+                </div>
+                <div class="event-content">The evaluation methodology is identified as flawed, prompting a shift to a more rigorous approach.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#11</span>
+                </div>
+                <div class="event-content">A new goal is set: re-evaluate the baseline model with a rigorous methodology, including comparison to optimal path length.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#12</span>
+                </div>
+                <div class="event-content">The evaluation framework is rebuilt to be more rigorous, including adding a BFS solver.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#13</span>
+                </div>
+                <div class="event-content">A rigorous evaluation is run on the trained model across multiple maze sizes.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#14</span>
+                </div>
+                <div class="event-content">The rigorous evaluation provides a clear generalization curve, showing success dropping from 97% to 18% as maze size increases.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#15</span>
+                </div>
+                <div class="event-content">In successful runs, the agent&#x27;s path length is consistently ~1.8x the optimal path length.</div>
+            </div>
+
+            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="Setting up research" onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
+                    <span class="event-number">#16</span>
+                </div>
+                <div class="event-content">Failure cases from the evaluation are analyzed.</div>
+            </div>
+
+            <div class="event" style="border-color: #f43f5e;" data-type="eureka" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f43f5e;">Eureka</span>
+                    <span class="event-number">#17</span>
+                </div>
+                <div class="event-content">A key failure mode is identified: the agent gets stuck in tight loops, failing to explore the maze.</div>
+            </div>
+
+            <div class="event" style="border-color: #a855f7;" data-type="question" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #a855f7;">Question</span>
+                    <span class="event-number">#18</span>
+                </div>
+                <div class="event-content">Is the generalization failure a problem of model capacity or a limitation of the learning algorithm/architecture?</div>
+            </div>
+
+            <div class="event" style="border-color: #ec4899;" data-type="hypothesis" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ec4899;">Hypothesis</span>
+                    <span class="event-number">#19</span>
+                </div>
+                <div class="event-content">Hypothesis A: The LSTM&#x27;s hidden state capacity is insufficient to map larger mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #ec4899;" data-type="hypothesis" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ec4899;">Hypothesis</span>
+                    <span class="event-number">#20</span>
+                </div>
+                <div class="event-content">Hypothesis B: The vanilla LSTM architecture lacks the correct inductive bias for spatial mapping, regardless of capacity.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#21</span>
+                </div>
+                <div class="event-content">Two sets of experiments were prioritized: a hidden size ablation and an exploration bonus experiment.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#22</span>
+                </div>
+                <div class="event-content">Four models were trained in parallel: three with increased hidden sizes (256, 512, 1024) and one with an exploration bonus.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#23</span>
+                </div>
+                <div class="event-content">The initial exploration bonus implementation failed, causing policy collapse where the agent prioritized novelty over reaching the goal, resulting in a 0% success rate.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#24</span>
+                </div>
+                <div class="event-content">Increasing model capacity improves generalization (from 60% to 77% on 2x mazes) but with diminishing returns, suggesting capacity is not the only limiting factor.</div>
+            </div>
+
+            <div class="event" style="border-color: #ef4444;" data-type="pivot" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ef4444;">Pivot</span>
+                    <span class="event-number">#25</span>
+                </div>
+                <div class="event-content">The research focus shifted from capacity scaling to more advanced training strategies, specifically curriculum learning.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#26</span>
+                </div>
+                <div class="event-content">A primary curriculum learning experiment and a secondary, refined exploration bonus experiment were planned.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#27</span>
+                </div>
+                <div class="event-content">A curriculum learning model and a refined exploration bonus model (v2) were trained in parallel.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#28</span>
+                </div>
+                <div class="event-content">The refined exploration bonus (v2), with a smaller, annealed reward, successfully trained and achieved 90% generalization on 2x-sized mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#29</span>
+                </div>
+                <div class="event-content">Curriculum learning significantly improved generalization on very large mazes, achieving peak performance of 85% on 3x-sized mazes (31x31).</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes from egocentric observations and test its generalization capabilities. A baseline LSTM agent was implemented and trained using PPO on 11x11 mazes. An initial, flawed evaluation produced anomalous results, prompting a pivot to a more rigorous methodology.
+
+The rigorous evaluation, conducted over 100 episodes per maze size, revealed a clear generalization curve: the agent&#x27;s success rate degrades from 97% on the 11x11 training size to 18% on 41x41 mazes (4x size). Two key findings were established:
+1.  When the agent succeeds, it follows a consistent strategy, taking paths that are approximately 1.8 times the optimal length.
+2.  The primary failure mode on larger mazes is the agent getting stuck in local loops, failing to explore the environment broadly and eventually timing out.
+
+The current state is a well-characterized baseline model with a clear understanding of its performance limitations and failure modes, setting the stage for future work to address the exploration problem." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#30</span>
+                </div>
+                <div class="event-content">A bug in the evaluation script related to PyTorch version compatibility was identified and fixed.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#31</span>
+                </div>
+                <div class="event-content">Session wrap-up tasks were performed, including updating logs and project documentation.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#32</span>
+                </div>
+                <div class="event-content">The next research goals were set: 1) Validate that curriculum learning is superior to simply longer training, and 2) Push for reliable 3x generalization.</div>
+            </div>
+
+            <div class="event" style="border-color: #ec4899;" data-type="hypothesis" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ec4899;">Hypothesis</span>
+                    <span class="event-number">#33</span>
+                </div>
+                <div class="event-content">A hypothesis was proposed that the progressive nature of curriculum learning, not just total training time, is the reason for its success.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#34</span>
+                </div>
+                <div class="event-content">A control experiment was designed to test the curriculum hypothesis by training a model directly for an equivalent number of steps.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#35</span>
+                </div>
+                <div class="event-content">An experiment was designed to scale the curriculum approach by extending it to 15x15 mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #06b6d4;" data-type="idea" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #06b6d4;">Idea</span>
+                    <span class="event-number">#36</span>
+                </div>
+                <div class="event-content">An idea was suggested to analyze hidden state activations to understand the mechanism of curriculum learning, but it was deferred.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#37</span>
+                </div>
+                <div class="event-content">The control experiment (4M direct training) and the scaling experiment (extended curriculum to 15x15) were launched in parallel.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#38</span>
+                </div>
+                <div class="event-content">The control experiment established that curriculum learning is genuinely more effective than direct training with an equivalent compute budget (90% vs 66% on 2x mazes).</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. The initial baseline LSTM agent, trained on 11x11 mazes, showed a clear generalization drop-off on larger mazes, with the primary failure mode identified as a lack of exploration (getting stuck in loops).
+
+To address this, a key research question was posed: is this a capacity or an algorithmic problem? A series of experiments were conducted. First, a capacity ablation showed that increasing the LSTM&#x27;s hidden size from 128 to 512 improved generalization on 2x-sized mazes from 60% to 77%, but with diminishing returns beyond that. This confirmed that capacity is a factor but not the sole solution. An initial attempt to add an exploration bonus failed, as the intrinsic reward overwhelmed the goal-seeking behavior, causing policy collapse.
+
+Following these results, the focus pivoted to more advanced training strategies. Two experiments yielded significant breakthroughs:
+1.  **Curriculum Learning**: Training an agent on progressively larger mazes (5x5 -&gt; 7x7 -&gt; 9x9 -&gt; 11x11) dramatically improved generalization to much larger, unseen mazes (e.g., 68% success on 31x31 mazes, compared to 42% for the best non-curriculum model).
+2.  **Refined Exploration Bonus**: A second attempt at an exploration bonus, using a much smaller and annealed reward, successfully avoided policy collapse. This model achieved 90% success on 2x-sized mazes, the highest yet for that specific benchmark.
+
+The current state is that two highly promising methods—curriculum learning and carefully tuned intrinsic motivation—have been validated for improving the agent&#x27;s generalization, significantly outperforming both the baseline and simple capacity increases." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#39</span>
+                </div>
+                <div class="event-content">The extended curriculum experiment demonstrated that the method scales, achieving 95% generalization on 2x mazes and 75% on ~2.7x mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#40</span>
+                </div>
+                <div class="event-content">Project documentation, including progress trackers and research context, was updated with the latest findings.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#41</span>
+                </div>
+                <div class="event-content">Three new research goals were set: extend curriculum to 21x21, run multi-seed validation on the 15x15 model, and perform a quick 4x evaluation.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#42</span>
+                </div>
+                <div class="event-content">An evaluation was run on the 15x15 model against 61x61 mazes to test 4x generalization.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#43</span>
+                </div>
+                <div class="event-content">The training script was modified to properly support random seeds for reproducible experiments.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#44</span>
+                </div>
+                <div class="event-content">A large-scale experiment was launched, consisting of four parallel training runs: one for the 21x21 curriculum and three for the 15x15 multi-seed validation.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#45</span>
+                </div>
+                <div class="event-content">The model trained on 15x15 mazes achieved a 50% success rate on 61x61 mazes, establishing a 4x generalization baseline.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#46</span>
+                </div>
+                <div class="event-content">The curriculum-21x21 experiment failed, resulting in a model with 0% success rate on all test sizes.</div>
+            </div>
+
+            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
+                    <span class="event-number">#47</span>
+                </div>
+                <div class="event-content">The training logs of the failed 21x21 experiment were analyzed to diagnose the cause of the failure.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#48</span>
+                </div>
+                <div class="event-content">The 21x21 curriculum failure was attributed to catastrophic forgetting, as performance collapsed immediately after the curriculum shifted from 15x15 to 21x21 mazes.</div>
+            </div>
+
+            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
+                    <span class="event-number">#49</span>
+                </div>
+                <div class="event-content">Results from the three new seed runs of the 15x15 curriculum were aggregated and compared to the original run.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#50</span>
+                </div>
+                <div class="event-content">Multi-seed validation revealed high variance in generalization performance (84.5% ± 8.6% at 2x), invalidating the previous conclusion of &quot;reliable 2x generalization&quot;.</div>
+            </div>
+
+            <div class="event" style="border-color: #ef4444;" data-type="pivot" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #ef4444;">Pivot</span>
+                    <span class="event-number">#51</span>
+                </div>
+                <div class="event-content">Based on the findings of high variance and catastrophic forgetting, the research focus shifted from scaling up to stabilizing the training process.</div>
+            </div>
+
+            <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #84cc16;">Goal Set</span>
+                    <span class="event-number">#52</span>
+                </div>
+                <div class="event-content">A new goal was set to run a final stabilization experiment combining a finer-grained curriculum with a replay buffer.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#53</span>
+                </div>
+                <div class="event-content">A new training script was created to implement the logic for a stabilized curriculum with a replay buffer.</div>
+            </div>
+
+            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f97316;">Work</span>
+                    <span class="event-number">#54</span>
+                </div>
+                <div class="event-content">The new stabilized training script was debugged to resolve a CUDA error related to dynamic environment handling.</div>
+            </div>
+
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research previously established that curriculum learning was highly effective, with a model trained up to 15x15 mazes achieving what was believed to be reliable 2x generalization (95% success on 31x31 mazes). This chunk&#x27;s work was designed to validate this finding and push further.
+
+However, a series of crucial experiments revealed this conclusion was premature. First, a multi-seed validation of the 15x15 model showed high variance across runs, with a mean success rate of only 84.5% ± 8.6% at 2x generalization. This demonstrated the original 95% result was a lucky outlier and that the &quot;reliable&quot; threshold had not been met. Second, an attempt to extend the curriculum to 21x21 mazes failed completely due to catastrophic forgetting, where the model&#x27;s performance collapsed to 0% upon encountering the larger mazes. This exposed a critical stability limit in the training methodology. A quick evaluation also established the current model&#x27;s 4x generalization limit at a modest 50%.
+
+In response to these significant negative results, the project pivoted. The focus shifted from scaling generalization to stabilizing the training process. A final, ambitious experiment was designed to address the catastrophic forgetting issue by combining two techniques: a finer-grained curriculum (adding 17x17 and 19x19 steps) and a replay buffer (dedicating 20% of training to earlier maze sizes). After significant implementation and debugging work, three parallel runs of this new &quot;stabilized curriculum&quot; experiment have been launched and are currently in progress." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#55</span>
+                </div>
+                <div class="event-content">Three parallel training runs of the new &quot;stabilized curriculum&quot; experiment were launched.</div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function toggleSummary(eventEl) {
+            const allEvents = Array.from(document.querySelectorAll('.event'));
+            const clickedIndex = allEvents.indexOf(eventEl);
+
+            const isMobile = window.innerWidth <= 768;
+            const columnsPerRow = isMobile ? 2 : 4;
+
+            const rowIndex = Math.floor(clickedIndex / columnsPerRow);
+            const lastIndexInRow = Math.min((rowIndex + 1) * columnsPerRow - 1, allEvents.length - 1);
+            const lastEventInRow = allEvents[lastIndexInRow];
+
+            const nextSibling = lastEventInRow.nextElementSibling;
+
+            if (nextSibling && nextSibling.classList.contains('summary-row') && eventEl.classList.contains('active')) {
+                nextSibling.remove();
+                eventEl.classList.remove('active');
+            } else {
+                document.querySelectorAll('.summary-row').forEach(row => row.remove());
+                document.querySelectorAll('.event.active').forEach(ev => ev.classList.remove('active'));
+
+                const summaryRow = document.createElement('div');
+                summaryRow.className = 'summary-row';
+                summaryRow.textContent = eventEl.dataset.summary;
+                lastEventInRow.insertAdjacentElement('afterend', summaryRow);
+                eventEl.classList.add('active');
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.summary-row').forEach(row => row.remove());
+            document.querySelectorAll('.event.active').forEach(ev => ev.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>
