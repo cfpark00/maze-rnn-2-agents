@@ -116,7 +116,7 @@
     <div class="container">
         <h1>Research Flow: Maze RNN Multi-Turn V1 (Auto-GS)</h1>
         <div class="stats">
-            <strong>55</strong> research events · Click any event to see full context
+            <strong>53</strong> research events · Click any event to see full context
         </div>
 
         <div class="grid">
@@ -614,7 +614,7 @@ The current state is that curriculum learning has been validated as a genuinely 
                     <span class="event-type" style="color: #84cc16;">Goal Set</span>
                     <span class="event-number">#41</span>
                 </div>
-                <div class="event-content">Three new research goals were set: extend curriculum to 21x21, run multi-seed validation on the 15x15 model, and perform a quick 4x evaluation.</div>
+                <div class="event-content">Set three new research goals: extend curriculum to 21x21, run multi-seed validation on the 15x15 model, and test 4x generalization.</div>
             </div>
 
             <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -628,21 +628,7 @@ The current state is that curriculum learning has been validated as a genuinely 
                     <span class="event-type" style="color: #3b82f6;">Experiment</span>
                     <span class="event-number">#42</span>
                 </div>
-                <div class="event-content">An evaluation was run on the 15x15 model against 61x61 mazes to test 4x generalization.</div>
-            </div>
-
-            <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
-
-In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
-
-Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
-
-The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
-                <div class="event-header">
-                    <span class="event-type" style="color: #f97316;">Work</span>
-                    <span class="event-number">#43</span>
-                </div>
-                <div class="event-content">The training script was modified to properly support random seeds for reproducible experiments.</div>
+                <div class="event-content">An evaluation of the 15x15 model on 61x61 mazes (4x generalization) was conducted.</div>
             </div>
 
             <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -654,9 +640,23 @@ Second, an experiment was run to test the scalability of the curriculum approach
 The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #3b82f6;">Experiment</span>
+                    <span class="event-number">#43</span>
+                </div>
+                <div class="event-content">A multi-seed validation (3 new seeds) of the 15x15 curriculum and an experiment to extend the curriculum to 21x21 were launched in parallel.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
                     <span class="event-number">#44</span>
                 </div>
-                <div class="event-content">A large-scale experiment was launched, consisting of four parallel training runs: one for the 21x21 curriculum and three for the 15x15 multi-seed validation.</div>
+                <div class="event-content">The 15x15 model achieves a 50% success rate on 61x61 mazes, establishing a 4x generalization baseline.</div>
             </div>
 
             <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -670,7 +670,7 @@ The current state is that curriculum learning has been validated as a genuinely 
                     <span class="event-type" style="color: #f59e0b;">Finding</span>
                     <span class="event-number">#45</span>
                 </div>
-                <div class="event-content">The model trained on 15x15 mazes achieved a 50% success rate on 61x61 mazes, establishing a 4x generalization baseline.</div>
+                <div class="event-content">The experiment to extend the curriculum to 21x21 failed due to catastrophic forgetting when transitioning from 15x15 mazes.</div>
             </div>
 
             <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -684,63 +684,7 @@ The current state is that curriculum learning has been validated as a genuinely 
                     <span class="event-type" style="color: #f59e0b;">Finding</span>
                     <span class="event-number">#46</span>
                 </div>
-                <div class="event-content">The curriculum-21x21 experiment failed, resulting in a model with 0% success rate on all test sizes.</div>
-            </div>
-
-            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
-
-In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
-
-Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
-
-The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
-                <div class="event-header">
-                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
-                    <span class="event-number">#47</span>
-                </div>
-                <div class="event-content">The training logs of the failed 21x21 experiment were analyzed to diagnose the cause of the failure.</div>
-            </div>
-
-            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
-
-In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
-
-Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
-
-The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
-                <div class="event-header">
-                    <span class="event-type" style="color: #f59e0b;">Finding</span>
-                    <span class="event-number">#48</span>
-                </div>
-                <div class="event-content">The 21x21 curriculum failure was attributed to catastrophic forgetting, as performance collapsed immediately after the curriculum shifted from 15x15 to 21x21 mazes.</div>
-            </div>
-
-            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
-
-In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
-
-Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
-
-The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
-                <div class="event-header">
-                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
-                    <span class="event-number">#49</span>
-                </div>
-                <div class="event-content">Results from the three new seed runs of the 15x15 curriculum were aggregated and compared to the original run.</div>
-            </div>
-
-            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
-
-In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
-
-Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
-
-The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
-                <div class="event-header">
-                    <span class="event-type" style="color: #f59e0b;">Finding</span>
-                    <span class="event-number">#50</span>
-                </div>
-                <div class="event-content">Multi-seed validation revealed high variance in generalization performance (84.5% ± 8.6% at 2x), invalidating the previous conclusion of &quot;reliable 2x generalization&quot;.</div>
+                <div class="event-content">Multi-seed validation revealed high variance in the 15x15 curriculum&#x27;s performance (84.5% ± 8.6% at 2x), invalidating the previous &quot;reliable 2x generalization&quot; milestone.</div>
             </div>
 
             <div class="event" style="border-color: #ef4444;" data-type="pivot" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -752,9 +696,9 @@ Second, an experiment was run to test the scalability of the curriculum approach
 The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #ef4444;">Pivot</span>
-                    <span class="event-number">#51</span>
+                    <span class="event-number">#47</span>
                 </div>
-                <div class="event-content">Based on the findings of high variance and catastrophic forgetting, the research focus shifted from scaling up to stabilizing the training process.</div>
+                <div class="event-content">A major reassessment of the project&#x27;s status concluded that reliable generalization was not achieved and catastrophic forgetting is the key barrier.</div>
             </div>
 
             <div class="event" style="border-color: #84cc16;" data-type="goal set" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -766,9 +710,9 @@ Second, an experiment was run to test the scalability of the curriculum approach
 The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #84cc16;">Goal Set</span>
-                    <span class="event-number">#52</span>
+                    <span class="event-number">#48</span>
                 </div>
-                <div class="event-content">A new goal was set to run a final stabilization experiment combining a finer-grained curriculum with a replay buffer.</div>
+                <div class="event-content">A final experiment was designed to overcome forgetting by combining a finer-grained curriculum with a replay buffer.</div>
             </div>
 
             <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -780,9 +724,9 @@ Second, an experiment was run to test the scalability of the curriculum approach
 The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #f97316;">Work</span>
-                    <span class="event-number">#53</span>
+                    <span class="event-number">#49</span>
                 </div>
-                <div class="event-content">A new training script was created to implement the logic for a stabilized curriculum with a replay buffer.</div>
+                <div class="event-content">A new training script with replay buffer and finer curriculum logic was implemented.</div>
             </div>
 
             <div class="event" style="border-color: #f97316;" data-type="work" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
@@ -794,21 +738,51 @@ Second, an experiment was run to test the scalability of the curriculum approach
 The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #f97316;">Work</span>
-                    <span class="event-number">#54</span>
+                    <span class="event-number">#50</span>
                 </div>
-                <div class="event-content">The new stabilized training script was debugged to resolve a CUDA error related to dynamic environment handling.</div>
+                <div class="event-content">The new training script was debugged to resolve a CUDA error related to environment handling.</div>
             </div>
 
-            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research previously established that curriculum learning was highly effective, with a model trained up to 15x15 mazes achieving what was believed to be reliable 2x generalization (95% success on 31x31 mazes). This chunk&#x27;s work was designed to validate this finding and push further.
+            <div class="event" style="border-color: #3b82f6;" data-type="experiment" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
 
-However, a series of crucial experiments revealed this conclusion was premature. First, a multi-seed validation of the 15x15 model showed high variance across runs, with a mean success rate of only 84.5% ± 8.6% at 2x generalization. This demonstrated the original 95% result was a lucky outlier and that the &quot;reliable&quot; threshold had not been met. Second, an attempt to extend the curriculum to 21x21 mazes failed completely due to catastrophic forgetting, where the model&#x27;s performance collapsed to 0% upon encountering the larger mazes. This exposed a critical stability limit in the training methodology. A quick evaluation also established the current model&#x27;s 4x generalization limit at a modest 50%.
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
 
-In response to these significant negative results, the project pivoted. The focus shifted from scaling generalization to stabilizing the training process. A final, ambitious experiment was designed to address the catastrophic forgetting issue by combining two techniques: a finer-grained curriculum (adding 17x17 and 19x19 steps) and a replay buffer (dedicating 20% of training to earlier maze sizes). After significant implementation and debugging work, three parallel runs of this new &quot;stabilized curriculum&quot; experiment have been launched and are currently in progress." onclick="toggleSummary(this)">
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
                 <div class="event-header">
                     <span class="event-type" style="color: #3b82f6;">Experiment</span>
-                    <span class="event-number">#55</span>
+                    <span class="event-number">#51</span>
                 </div>
-                <div class="event-content">Three parallel training runs of the new &quot;stabilized curriculum&quot; experiment were launched.</div>
+                <div class="event-content">The stabilization experiment was launched across three random seeds.</div>
+            </div>
+
+            <div class="event" style="border-color: #f59e0b;" data-type="finding" data-summary="The research project aims to train an RNN to solve mazes and generalize. Initial work established that while model capacity is a factor, curriculum learning is the key breakthrough for generalization. The baseline curriculum model (training up to 11x11 mazes) achieved 90% success on 2x-sized mazes (21x21), a significant milestone.
+
+In this phase, two parallel experiments were conducted to build on this success. First, a critical control experiment was run to determine if curriculum learning&#x27;s benefit was its progressive structure or simply a larger training budget. The results were definitive: the curriculum model&#x27;s 90% success on 2x mazes was far superior to the 66% achieved by a model trained directly with an identical compute budget. This validated that the curriculum strategy itself, not just training time, is the source of the performance gain.
+
+Second, an experiment was run to test the scalability of the curriculum approach by extending the training regimen up to 15x15 mazes. This proved highly successful, further improving generalization to 95% on 2x mazes (31x31, relative to the 15x15 training size) and achieving 75% on ~2.7x mazes (41x41).
+
+The current state is that curriculum learning has been validated as a genuinely superior training method and has been shown to scale effectively, bringing the project to the cusp of achieving reliable 3x generalization." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #f59e0b;">Finding</span>
+                    <span class="event-number">#52</span>
+                </div>
+                <div class="event-content">The stabilization experiment combining a finer curriculum and a replay buffer also failed, with the model still suffering from catastrophic forgetting.</div>
+            </div>
+
+            <div class="event" style="border-color: #14b8a6;" data-type="analysis" data-summary="The research pivoted significantly after experiments revealed previous conclusions were overly optimistic. A multi-seed validation of the successful 15x15 curriculum showed high variance (84.5% ± 8.6% success at 2x), invalidating the prior claim of having achieved &quot;reliable&quot; 90%+ generalization. The original high-performing model was found to be a lucky outlier.
+
+Furthermore, an attempt to extend the curriculum to 21x21 mazes failed completely. Analysis revealed this was due to catastrophic forgetting, where the model&#x27;s performance collapsed to 0% upon encountering the larger maze size, identifying a critical stability limit. A quick test on 4x mazes (61x61) with the 15x15 model established a performance ceiling of 50%.
+
+In response to these findings, a final, more complex experiment was conducted to overcome the forgetting problem. This involved a finer-grained curriculum combined with a replay buffer that continuously exposed the model to easier mazes. This stabilization attempt also failed across all three seeds, with the models still suffering catastrophic forgetting.
+
+The current state is a robust negative result: the vanilla LSTM architecture, even with advanced curriculum learning and stabilization techniques, is fundamentally unable to overcome catastrophic forgetting when the difficulty jump becomes too large, preventing it from achieving reliable generalization on this task." onclick="toggleSummary(this)">
+                <div class="event-header">
+                    <span class="event-type" style="color: #14b8a6;">Analysis</span>
+                    <span class="event-number">#53</span>
+                </div>
+                <div class="event-content">Analysis of the failed stabilization runs showed that while all failed, the exact failure mode varied across seeds (complete collapse vs. degradation to a low-performance state).</div>
             </div>
 
         </div>
